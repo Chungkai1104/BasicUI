@@ -59,6 +59,7 @@ fun Main(modifier: Modifier = Modifier) {
         LazyColumnExample(modifier)
         ColumnExample(modifier)
         TextFieldExample(modifier)
+        CenterImagesExample(modifier)
     }
 }
 @Composable
@@ -124,6 +125,7 @@ fun RowExample(modifier: Modifier = Modifier) {
             modifier = Modifier.size(100.dp)
         )
     }
+
 }
 @Composable
 fun TextFieldExample(modifier: Modifier = Modifier) {
@@ -146,6 +148,40 @@ fun TextFieldExample(modifier: Modifier = Modifier) {
         Text(
             text = if (inputText.isBlank()) "尚未輸入內容" else "您輸入的是：$inputText"
         )
+    }
+}
+@Composable
+fun CenterImagesExample(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.animal1),
+                contentDescription = "第一張圖片",
+                modifier = Modifier.size(80.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.animal2),
+                contentDescription = "第二張圖片",
+                modifier = Modifier.size(80.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.animal3),
+                contentDescription = "第三張圖片",
+                modifier = Modifier.size(80.dp)
+            )
+        }
     }
 }
 
