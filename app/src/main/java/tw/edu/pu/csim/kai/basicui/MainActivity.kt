@@ -1,12 +1,14 @@
 package tw.edu.pu.csim.kai.basicui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import tw.edu.pu.csim.kai.basicui.ui.theme.BasicUITheme
@@ -55,10 +58,16 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+                Toast.makeText(
+                    this,
+                    "作者：張中愷",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+        }
     }
-}
+
 
 @Composable
 fun Main(modifier: Modifier = Modifier) {
@@ -199,6 +208,8 @@ data class Animal(
 
 @Composable
 fun LazyRowExample(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
     val animals = listOf(
         Animal("鴨子", R.drawable.animal0),
         Animal("企鵝", R.drawable.animal1),
@@ -235,6 +246,14 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
                         painter = painterResource(id = animal.imageRes),
                         contentDescription = animal.name,
                         modifier = Modifier.size(150.dp)
+                            .clickable {
+                                Toast.makeText(
+                                    context,
+                                    "您點選的是 ${animal.name}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
