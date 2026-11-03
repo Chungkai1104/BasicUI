@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -35,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,15 +83,12 @@ fun Main(modifier: Modifier = Modifier) {
         LazyColumnExample(modifier)
         ColumnExample(modifier)
         TextFieldExample(modifier)
-        CenterImagesExample(modifier)
         LazyRowExample(modifier)
 
-
-            SimpleVideoPlayer(R.raw.love)
-
-        }
-
+        // 將原本的 SimpleVideoPlayer(R.raw.love) 替換為：
+        VideoSwitcher()
     }
+}
 
 @Composable
 fun LazyColumnExample(modifier: Modifier = Modifier) {
@@ -283,20 +282,23 @@ fun SimpleVideoPlayer(
 ) {
     val context = LocalContext.current
 
-    // 建立並記住 ExoPlayer 實體，設定影片路徑與自動播放
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            val uri = "android.resource://${context.packageName}/$videoRes"
-            setMediaItem(MediaItem.fromUri(uri))
-            prepare()
-            playWhenReady = true // 載入完成自動播放
-        }
+    // 建立 ExoPlayer 實體
+    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
+
+    // 關鍵修改：當 videoRes 改變時，自動重新載入對應的影片
+    LaunchedEffect(videoRes) {
+        val uri = "android.resource://${context.packageName}/$videoRes"
+        exoPlayer.setMediaItem(MediaItem.fromUri(uri))
+        exoPlayer.prepare()
+        exoPlayer.playWhenReady = true
     }
+
     DisposableEffect(Unit) {
         onDispose {
-            exoPlayer.release() // 💡 釋放播放器資源
+            exoPlayer.release()
         }
     }
+
     AndroidView(
         factory = { ctx ->
             PlayerView(ctx).apply {
@@ -308,5 +310,23 @@ fun SimpleVideoPlayer(
             .height(200.dp)
     )
 }
+@Composable
+fun VideoSwitcher() {
+    // 記住目前的影片狀態，預設為播放 love
+    var isLoveVideo by remember { mutableStateOf(true) }
 
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        // 根據狀態決定要傳入的影片資源
+        val currentVideo = if (isLoveVideo) R.raw.love else R.raw.handpan
+        SimpleVideoPlayer(videoRes = currentVideo)
+
+        // 切換按鈕
+        Button(
+            onClick = { isLoveVideo = !isLoveVideo },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(if (isLoveVideo) "切換至手碟影片" else "切換至Love影片")
+        }
+    }
+}
 
